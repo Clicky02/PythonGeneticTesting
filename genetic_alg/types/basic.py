@@ -2,6 +2,10 @@ import random
 import string
 from genetic_alg.types.type_info import TypeInfo
 
+"""
+This file contains the TypeInfo definitions for all the basic types that we support.
+"""
+
 
 def random_int(*_):
     return random.randint(-1000000, 1000000)
