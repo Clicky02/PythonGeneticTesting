@@ -57,7 +57,7 @@ def add_char(val: str):
 
 def remove_char(val: str):
     pos = random.randint(0, len(val) - 1)
-    return val[:pos] + val[pos + 1 :]
+    return val[:pos] + val[pos + 1:]
 
 
 str_type_info = TypeInfo[str](
@@ -67,4 +67,74 @@ str_type_info = TypeInfo[str](
     [""],
 )
 
-basic_type_infos = [int_type_info, float_type_info, bool_type_info, str_type_info]
+
+# Define values for a new type `list[int]`.
+def random_int_list(*_):
+    return [random.randint(-100, 100) for _ in range(random.randint(1, 10))]
+
+
+def add_element(val: list[int]):
+    val.append(random.randint(-100, 100))
+    return val
+
+
+def remove_element(val: list[int]):
+    if val:
+        val.pop(random.randint(0, len(val) - 1))
+    return val
+
+
+int_list_type_info = TypeInfo[list[int]](list, random_int_list, [add_element, remove_element], [[], [0]])
+
+
+# Define values for a new type `dict[int]`.
+def random_dict(*_):
+    return {random.choice(string.ascii_lowercase): random.randint(-100, 100) for _ in range(random.randint(1, 5))}
+
+
+def add_key_value(val: dict):
+    val[random.choice(string.ascii_lowercase)] = random.randint(-100, 100)
+    return val
+
+
+def remove_key(val: dict):
+    if val:
+        val.pop(random.choice(list(val.keys())))
+    return val
+
+
+dict_type_info = TypeInfo[dict](dict, random_dict, [add_key_value, remove_key], [{}])
+
+
+# Define values for a new type `tuple[int]`.
+def random_int_tuple(*_):
+    return (random.randint(-100, 100), random.randint(-100, 100))
+
+
+def reverse_tuple(val: tuple):
+    return val[::-1]
+
+
+tuple_type_info = TypeInfo[tuple](tuple, random_int_tuple, [reverse_tuple], [(0, 0)])
+
+
+# Define values for a new type `set[int]`.
+def random_int_set(*_):
+    return {random.randint(-100, 100) for _ in range(random.randint(1, 10))}
+
+
+def add_to_set(val: set[int]):
+    val.add(random.randint(-100, 100))
+    return val
+
+
+def remove_from_set(val: set[int]):
+    if val:
+        val.pop()
+    return val
+
+
+set_type_info = TypeInfo[set](set, random_int_set, [add_to_set, remove_from_set], [set()])
+
+basic_type_infos = [int_type_info, float_type_info, bool_type_info, str_type_info, int_list_type_info,
+                    dict_type_info, set_type_info, tuple_type_info]

@@ -1,7 +1,9 @@
 from dataclasses import dataclass
-
+import itertools
 from genetic_alg.fitness.shared_statement_fitness import SharedStatementFitness
 from genetic_alg.generator import GeneticTestGenerator
+from genetic_alg.selection.interface import ElitismSelection
+from genetic_alg.population import Population
 
 
 @dataclass
@@ -40,9 +42,44 @@ if __name__ == "__main__":
     # print(split_and_sort_constants(constants))
 
     gen = GeneticTestGenerator(random_candidate_count=3, interesting_chance=0.3)
-    pop = gen.create_population_for(testable)
+    population = gen.create_population_for(testable)
 
-    SharedStatementFitness().evaluate_on(pop)
+    SharedStatementFitness().evaluate_on(population)
 
-    print(pop)
-    print()
+    print(f"INITIAL POPULATION: {population}"
+          f"\n"
+          f"INITIAL POPULATION SIZE: {len(population.candidates)}"
+          f"\n")
+
+    # Initialize the Selection Strategy
+    elite_count = 2
+    # initialize how many candidates from the population you want
+    new_population_count = elite_count * 2
+    selection_strategy = ElitismSelection(elite_count, new_population_count)
+
+    # Run selection to create a new population
+    new_population = selection_strategy.select_on(population)
+    print(f"NEW POPULATION: {new_population}"
+          f"\n"
+          f"NEW POPULATION SIZE: {len(new_population.candidates)}"
+          f"\n")
+
+    new_pop_candidates = [i for i in new_population.candidates]
+
+    # preform all combinations of crossovers
+    crossover_population = new_pop_candidates
+    for combination in itertools.combinations(new_pop_candidates, 2):
+        parent1, parent2 = combination[0], combination[1]
+        print(f"PARENT 1: {parent1}"
+              "\n"
+              f"PARENT 2: {parent2}")
+        cross1 = parent1.crossover(parent2)
+        cross2 = parent2.crossover(parent1)
+        print(f"CROSSOVER 1: {parent1.crossover(parent2)}")
+        print(f"CROSSOVER 2: {parent2.crossover(parent1)}")
+        crossover_population.append(cross1)
+        crossover_population.append(cross2)
+
+    print(f"CANDIDATES AFTER CROSSOVER: {crossover_population}")
+    # Evaluate Fitness Function on New population
+    SharedStatementFitness().evaluate_on(new_population)
