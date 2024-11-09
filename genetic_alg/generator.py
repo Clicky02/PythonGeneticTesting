@@ -22,14 +22,11 @@ class GeneticTestGenerator:
         self,
         random_candidate_count: int = 10,
         interesting_chance: float = 0.3,
-        supported_types: list[TypeInfo] = basic_type_infos,
+        supported_types: dict[type, TypeInfo] = basic_type_infos,
     ) -> None:
         self.random_candidate_count = random_candidate_count
         self.interesting_chance = interesting_chance
-
-        self.supported_types = {}
-        for val in supported_types:
-            self.supported_types[val.type] = val
+        self.supported_types = supported_types
 
     def create_population_for(self, target: Callable):
         """
