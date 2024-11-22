@@ -1,19 +1,16 @@
 import itertools
-from genetic_alg import population
 from genetic_alg.fitness.shared_statement_fitness import SharedStatementFitness
 from genetic_alg.generator import GeneticTestGenerator
-from genetic_alg.selection.interface import ElitismSelection, TournamentSelection, RouletteWheelSelection
-from genetic_alg.population import Population
+from genetic_alg.selection.roulette import RouletteWheelSelection
+from genetic_alg.selection.tournament import TournamentSelection
+from genetic_alg.selection.elitism import ElitismSelection
 from tests import testable_int, testable_str, testable_float
 
 
 def preform_genetic_testing(p, types):
     SharedStatementFitness().evaluate_on(p)
 
-    print(f"INITIAL POPULATION: {p}"
-          f"\n"
-          f"INITIAL POPULATION SIZE: {len(p.candidates)}"
-          f"\n")
+    print(f"INITIAL POPULATION: {p}" f"\n" f"INITIAL POPULATION SIZE: {len(p.candidates)}" f"\n")
 
     # Initialize the Selection Strategy
     elite_count = 2
@@ -28,10 +25,7 @@ def preform_genetic_testing(p, types):
     for strategy in [elite_strategy, tournament_strategy, random_strategy]:
         print(f"CURRENT STRATEGY: {strategy}")
         new_population = strategy.select_on(p)
-        print(f"NEW POPULATION: {new_population}"
-              f"\n"
-              f"NEW POPULATION SIZE: {len(new_population.candidates)}"
-              f"\n")
+        print(f"NEW POPULATION: {new_population}" f"\n" f"NEW POPULATION SIZE: {len(new_population.candidates)}" f"\n")
 
         new_pop_candidates = [i for i in new_population.candidates]
 
@@ -39,9 +33,7 @@ def preform_genetic_testing(p, types):
         crossover_population = new_pop_candidates
         for combination in itertools.combinations(new_pop_candidates, 2):
             parent1, parent2 = combination[0], combination[1]
-            print(f"PARENT 1: {parent1}"
-                  "\n"
-                  f"PARENT 2: {parent2}")
+            print(f"PARENT 1: {parent1}" "\n" f"PARENT 2: {parent2}")
             cross1 = parent1.crossover(parent2)
             cross2 = parent2.crossover(parent1)
             print(f"CROSSOVER 1: {parent1.crossover(parent2)}")
