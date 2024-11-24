@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from genetic_alg.candidate import Candidate
 from genetic_alg.population import Population
 
 
@@ -8,6 +9,6 @@ class ISelection(ABC):
     """
 
     @abstractmethod
-    def select_on(self, population: Population) -> Population:
-        """Creates a new population by selecting from the current population."""
+    def select_from(self, candidates: list[Candidate], total_fitness: float) -> Candidate:
+        """Selects a single candidate from a list of possible candidates"""
         ...

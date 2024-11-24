@@ -33,7 +33,7 @@ class SharedStatementFitness(IFitness):
             cov.stop()
 
             lines = cov.get_data().lines(details.file)
-            print(candidate.arg_values, lines)
+
             if lines != None:
                 coverage_by_candidate[i] = lines
 

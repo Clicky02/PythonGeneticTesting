@@ -1,3 +1,6 @@
+from math import ceil
+from typing import override
+from genetic_alg.candidate import Candidate
 from genetic_alg.population import Population
 from genetic_alg.selection.interface import ISelection
 
@@ -11,11 +14,6 @@ class RouletteWheelSelection(ISelection):
     Candidates with higher fitness values have a higher probability of being selected,
     akin to a weighted random choice.
 
-    Methods:
-        select_on(population: Population) -> Population:
-            Runs the selection process using a probability distribution based on
-            candidate fitness and returns a new population of selected candidates.
-
     Details:
         The total fitness of the population is calculated, and for each selection, a random
         "pick" is generated within the total fitness range. Each candidate's fitness adds
@@ -23,17 +21,16 @@ class RouletteWheelSelection(ISelection):
         the random "pick" threshold is selected.
     """
 
-    def select_on(self, population: Population) -> Population:
-        total_fitness = sum(candidate.fitness for candidate in population.candidates)
-        selected_candidates = []
+    # TODO: Add a without replacement option?
 
-        for _ in range(len(population.candidates)):
-            pick = random.uniform(0, total_fitness)
-            current = 0
-            for candidate in population.candidates:
-                current += candidate.fitness
-                if current >= pick:
-                    selected_candidates.append(candidate)
-                    break
+    @override
+    def select_from(self, candidates: list[Candidate], total_fitness: float) -> Candidate:
+        pick = random.uniform(0, total_fitness)
 
-        return Population(population.target, population.target_details, selected_candidates)
+        current = 0
+        for candidate in candidates:
+            current += candidate.fitness
+            if current >= pick:
+                return candidate
+
+        return candidates[-1]

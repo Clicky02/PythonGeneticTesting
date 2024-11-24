@@ -16,38 +16,15 @@ class Candidate:
     arg_values: list[Any]
     fitness: float = 0
 
-    def mutate(self, supported_types: dict[type, TypeInfo], mutation_rate: float = 0.1):
-        """
-        Randomly mutates one or more values in arg_values based on the mutation rate,
-        using the mutation functions specified in the TypeInfo instances.
-
-        :param supported_types: A dictionary mapping types to TypeInfo instances.
-        :param mutation_rate: The probability of mutating each argument.
-        """
-        for i in range(len(self.arg_values)):
-            if random.random() < mutation_rate:
-                value = self.arg_values[i]
-                value_type = type(value)
-
-                # Get the TypeInfo for the value's type
-                if value_type in supported_types:
-                    type_info = supported_types[value_type]
-                    # Choose a mutation function at random
-                    mutation_function = random.choice(type_info.mutators)
-                    # Apply the mutation function to the value
-                    mutated_value = mutation_function(value)
-                    self.arg_values[i] = mutated_value
-                else:
-                    # Handle unsupported types if necessary
-                    print(f"No TypeInfo available for type {value_type}, skipping mutation.")
-        return self
-
-    def crossover(self, other: Candidate) -> Candidate:
+    def crossover(self, other: Candidate) -> tuple[Candidate, Candidate]:
         arg_count = len(self.arg_values)
         assert arg_count == len(other.arg_values)
-        choose = lambda i: self.arg_values[i] if bool(random.getrandbits(1)) else other.arg_values[i]
-        new_args = [choose(i) for i in range(arg_count)]
-        return Candidate(new_args)
+
+        values = [bool(random.getrandbits(1)) for _ in range(arg_count)]
+        child1_args = [self.arg_values[i] if values[i] else other.arg_values[i] for i in range(arg_count)]
+        child2_args = [self.arg_values[i] if not values[i] else other.arg_values[i] for i in range(arg_count)]
+
+        return Candidate(child1_args), Candidate(child2_args)
 
     def copy(self) -> Candidate:
         return Candidate(self.arg_values.copy())
