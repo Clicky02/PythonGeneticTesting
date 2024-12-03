@@ -7,7 +7,7 @@ from genetic_alg.selection.tournament import TournamentSelection
 
 # from genetic_alg.selection.elitism import ElitismSelection
 from genetic_alg.stop_conditions import max_generations
-from tests import testable_int, testable_str, testable_float
+from tests import longest_consecutive_subsequence, testable_int, testable_str, testable_float
 
 
 if __name__ == "__main__":
@@ -20,6 +20,9 @@ if __name__ == "__main__":
         percent_candidates_preserved=0.5,
         elite_count=3,
     )
+
+    print("SUBSEQUENCE TEST")
+    pops = gen.run_until(longest_consecutive_subsequence, max_generations(100))
 
     print("INT TEST")
     pops = gen.run_until(testable_int, max_generations(100))

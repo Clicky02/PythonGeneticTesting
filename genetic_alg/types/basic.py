@@ -100,7 +100,7 @@ def mutate_element(val: list[int]):
 
 
 int_list_type_info = TypeInfo[list[int]](
-    list, random_int_list, [add_element, remove_element, mutate_element], [[], [0]]
+    list[int], random_int_list, [add_element, remove_element, mutate_element], [[], [0]]
 )
 
 
@@ -120,7 +120,7 @@ def remove_key(val: dict):
     return val
 
 
-dict_type_info = TypeInfo[dict](dict, random_dict, [add_key_value, remove_key], [{}])
+dict_type_info = TypeInfo[dict[str, int]](dict[str, int], random_dict, [add_key_value, remove_key], [{}])
 
 
 # Define values for a new type `tuple[int]`.
@@ -151,7 +151,7 @@ def remove_from_set(val: set[int]):
     return val
 
 
-set_type_info = TypeInfo[set](set, random_int_set, [add_to_set, remove_from_set], [set()])
+set_type_info = TypeInfo[set[int]](set[int], random_int_set, [add_to_set, remove_from_set], [set()])
 
 basic_type_infos_list = [
     int_type_info,

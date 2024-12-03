@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 import inspect
+from types import GenericAlias
 from typing import Any, Callable, Optional, Self
 
 
@@ -24,7 +25,7 @@ class ParameterDetail:
     """
 
     name: str
-    type: type
+    type: type | GenericAlias
     default: Any | None
     kind: ParamKind
 
@@ -46,7 +47,7 @@ class ParameterDetail:
             case _:
                 raise ValueError(f"Unknown parameter kind for parameter '{name}'")
 
-        if isinstance(param.annotation, type):
+        if isinstance(param.annotation, type) or isinstance(param.annotation, GenericAlias):
             param_type = param.annotation
         else:
             raise ValueError(f"Parameter '{name}' does not have a (valid) type signature ")

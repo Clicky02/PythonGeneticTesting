@@ -1,6 +1,7 @@
 from itertools import product
 from math import ceil
 import random
+from types import GenericAlias
 from typing import Any, Callable
 from genetic_alg.candidate import Candidate
 from genetic_alg.fitness.interface import IFitness
@@ -26,7 +27,7 @@ class GeneticTestGenerator:
         mutation_rate: float = 0.05,
         random_candidate_count: int = 10,
         interesting_chance: float = 0.3,
-        supported_types: dict[type, TypeInfo] = basic_type_infos,
+        supported_types: dict[type | GenericAlias, TypeInfo] = basic_type_infos,
     ) -> None:
         self.fitness_algorithm = fitness_algorithm
         self.selection_strategy = selection_strategy
