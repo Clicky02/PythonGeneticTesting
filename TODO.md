@@ -6,6 +6,5 @@
 
 # Could do
 
--   Make it possible to see the coverage percent
 -   Add a statement coverage fitness function
 -   Add a branch coverage fitness function (not sure if possible)
