@@ -15,3 +15,4 @@ class Population:
     target_details: FunctionDetails
     candidates: list[Candidate]
     total_fitness: float = 0
+    coverage: float = 0

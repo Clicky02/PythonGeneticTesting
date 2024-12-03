@@ -1,10 +1,12 @@
 import itertools
 from genetic_alg.fitness.shared_statement import SharedStatementFitness
 from genetic_alg.generator import GeneticTestGenerator
+from genetic_alg.population import Population
 from genetic_alg.selection.roulette import RouletteWheelSelection
 from genetic_alg.selection.tournament import TournamentSelection
 
 # from genetic_alg.selection.elitism import ElitismSelection
+from genetic_alg.stop_conditions import max_generations
 from tests import testable_int, testable_str, testable_float
 
 
@@ -20,10 +22,10 @@ if __name__ == "__main__":
     )
 
     print("INT TEST")
-    pops = gen.run_on(testable_int, 100)
+    pops = gen.run_until(testable_int, max_generations(100))
 
     print("\n\nFLOAT TEST")
-    pops = gen.run_on(testable_float, 100)
+    pops = gen.run_until(testable_float, max_generations(100))
 
     print("\n\nSTRING TEST")
-    pops = gen.run_on(testable_str, 100)
+    pops = gen.run_until(testable_str, max_generations(100))

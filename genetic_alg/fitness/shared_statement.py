@@ -37,14 +37,17 @@ class SharedStatementFitness(IFitness):
             if lines != None:
                 coverage_by_candidate[i] = lines
 
+        _, executable_lines, *_ = cov.analysis2(details.file)
+
         lines_run = {}
+        for line in executable_lines:
+            if line > details.first_line and line < details.last_line:
+                lines_run[line] = 0
+
         for cov in coverage_by_candidate:
             for line in cov:
                 if line > details.first_line and line < details.last_line:
-                    if line in lines_run:
-                        lines_run[line] += 1
-                    else:
-                        lines_run[line] = 1
+                    lines_run[line] += 1
 
         population.total_fitness = 0
         for i in range(len(candidates)):
@@ -56,3 +59,5 @@ class SharedStatementFitness(IFitness):
                     candidate.fitness += 1 / lines_run[line]
 
             population.total_fitness += candidate.fitness
+
+        population.coverage = sum(run_count != 0 for run_count in lines_run.values()) / len(lines_run)

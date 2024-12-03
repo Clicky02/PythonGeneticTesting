@@ -37,19 +37,27 @@ class GeneticTestGenerator:
         self.interesting_chance = interesting_chance
         self.supported_types = supported_types
 
-    def run_on(self, target: Callable, generations: int):
+    def run_for(self, target: Callable, generations: int):
+        self.run_until(target, lambda gens, pop: gens >= generations)
+
+    def run_until(self, target: Callable, stop_condition: Callable[[int, Population], bool]):
         population = self.create_population_for(target)
 
+        gen = 0
         populations = [population]
-        for gen in range(generations):
+        while True:
             self.fitness_algorithm.evaluate_on(population)
-            print(f"Generation {gen} has fitness={population.total_fitness}")
+            print(f"Generation {gen} has fitness={population.total_fitness}, coverage={population.coverage}")
+
+            if stop_condition(gen, population):
+                break
 
             new_population = self.get_next_population(population)
             self.mutate_population(new_population)
 
             populations.append(new_population)
             population = new_population
+            gen += 1
 
         return populations
 

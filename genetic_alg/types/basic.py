@@ -1,3 +1,4 @@
+from copy import copy
 import random
 import string
 from genetic_alg.types.type_info import TypeInfo
@@ -67,7 +68,7 @@ def remove_char(val: str):
 
     # For non-empty strings, remove a character at a random position
     pos = random.randint(0, len(val) - 1)
-    return val[:pos] + val[pos + 1:]
+    return val[:pos] + val[pos + 1 :]
 
 
 str_type_info = TypeInfo[str](str, random_string, [random_string, add_char, remove_char], [""])
@@ -79,17 +80,28 @@ def random_int_list(*_):
 
 
 def add_element(val: list[int]):
+    val = copy(val)
     val.append(random.randint(-100, 100))
     return val
 
 
 def remove_element(val: list[int]):
+    val = copy(val)
     if val:
         val.pop(random.randint(0, len(val) - 1))
     return val
 
 
-int_list_type_info = TypeInfo[list[int]](list, random_int_list, [add_element, remove_element], [[], [0]])
+def mutate_element(val: list[int]):
+    val = copy(val)
+    i = random.randint(0, len(val) - 1)
+    val[i] = int_type_info.mutate(val[i])
+    return val
+
+
+int_list_type_info = TypeInfo[list[int]](
+    list, random_int_list, [add_element, remove_element, mutate_element], [[], [0]]
+)
 
 
 # Define values for a new type `dict[int]`.
@@ -141,8 +153,16 @@ def remove_from_set(val: set[int]):
 
 set_type_info = TypeInfo[set](set, random_int_set, [add_to_set, remove_from_set], [set()])
 
-basic_type_infos_list = [int_type_info, float_type_info, bool_type_info, str_type_info, int_list_type_info,
-                         dict_type_info, set_type_info, tuple_type_info]
+basic_type_infos_list = [
+    int_type_info,
+    float_type_info,
+    bool_type_info,
+    str_type_info,
+    int_list_type_info,
+    dict_type_info,
+    set_type_info,
+    tuple_type_info,
+]
 
 # Convert the list to a dictionary for quick access
 basic_type_infos = {type_info.type: type_info for type_info in basic_type_infos_list}

@@ -18,3 +18,7 @@ class TypeInfo(Generic[T]):
 
     def get_random_interesting(self) -> T:
         return random.choice(self.interesting_values)
+
+    def mutate(self, val: T):
+        mutation_function = random.choice(self.mutators)
+        return mutation_function(val)
