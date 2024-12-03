@@ -1,6 +1,8 @@
 from copy import copy
 import random
 import string
+from types import GenericAlias
+from typing import TypeAlias
 from genetic_alg.types.type_info import TypeInfo
 
 """
@@ -71,7 +73,7 @@ def remove_char(val: str):
     return val[:pos] + val[pos + 1 :]
 
 
-str_type_info = TypeInfo[str](str, random_string, [random_string, add_char, remove_char], [""])
+str_type_info = TypeInfo[str](str, random_string, [random_string, add_char, remove_char], [""], repr)
 
 
 # Define values for a new type `list[int]`.
@@ -165,4 +167,6 @@ basic_type_infos_list = [
 ]
 
 # Convert the list to a dictionary for quick access
+
+TypeDict: TypeAlias = dict[type | GenericAlias, TypeInfo]
 basic_type_infos = {type_info.type: type_info for type_info in basic_type_infos_list}

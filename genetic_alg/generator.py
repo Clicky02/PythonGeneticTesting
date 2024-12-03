@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from itertools import product
 from math import ceil
 import random
@@ -12,6 +13,11 @@ from genetic_alg.selection.interface import ISelection
 from genetic_alg.types.type_info import TypeInfo
 from genetic_alg.types.basic import basic_type_infos
 
+@dataclass
+class GenerationResult:
+    population: Population
+    generations: int
+    all_populations: list[Population] | None
 
 class GeneticTestGenerator:
     """
@@ -27,7 +33,7 @@ class GeneticTestGenerator:
         mutation_rate: float = 0.05,
         random_candidate_count: int = 10,
         interesting_chance: float = 0.3,
-        supported_types: dict[type | GenericAlias, TypeInfo] = basic_type_infos,
+        supported_types: dict[type | GenericAlias, TypeInfo] = basic_type_infos
     ) -> None:
         self.fitness_algorithm = fitness_algorithm
         self.selection_strategy = selection_strategy
@@ -38,29 +44,36 @@ class GeneticTestGenerator:
         self.interesting_chance = interesting_chance
         self.supported_types = supported_types
 
-    def run_for(self, target: Callable, generations: int):
-        self.run_until(target, lambda gens, pop: gens >= generations)
+    def run(self, target: Callable, generations: int, print_progress: bool = True) -> GenerationResult:
+        return self.run_until(target, lambda gens, pop: gens >= generations, print_progress)
 
-    def run_until(self, target: Callable, stop_condition: Callable[[int, Population], bool]):
+    def run_until(self, target: Callable, stop_condition: Callable[[int, Population], bool], print_progress: bool = True) -> GenerationResult:
         population = self.create_population_for(target)
+        self.fitness_algorithm.evaluate_on(population)
+
+        if print_progress:
+            print(f"Initial Population has fitness={population.total_fitness}, coverage={population.coverage}")
 
         gen = 0
+        best_population = population
         populations = [population]
-        while True:
-            self.fitness_algorithm.evaluate_on(population)
-            print(f"Generation {gen} has fitness={population.total_fitness}, coverage={population.coverage}")
-
-            if stop_condition(gen, population):
-                break
+        while not stop_condition(gen, population):
+            gen += 1
 
             new_population = self.get_next_population(population)
             self.mutate_population(new_population)
+            self.fitness_algorithm.evaluate_on(population)
+
+            if new_population.coverage >= best_population.coverage:
+                best_population = new_population
+
+            if print_progress:
+                print(f"Generation {gen} has fitness={population.total_fitness}, coverage={population.coverage}")
 
             populations.append(new_population)
             population = new_population
-            gen += 1
 
-        return populations
+        return GenerationResult(best_population, gen, populations)
 
     def get_next_population(self, population: Population) -> Population:
         curr_candidates = population.candidates
@@ -89,14 +102,14 @@ class GeneticTestGenerator:
 
         assert len(new_candidates) == pop_size
 
-        return Population(population.target, population.target_details, new_candidates)
+        return Population(population.target, population.target_details, new_candidates, self.supported_types)
 
     def mutate_population(self, population: Population):
         for c in population.candidates:
             for i in range(len(c.arg_values)):
                 if random.random() < self.mutation_rate:
                     value = c.arg_values[i]
-                    value_type = type(value)
+                    value_type = population.target_details.args[i].type
 
                     # Get the TypeInfo for the value's type
                     if value_type in self.supported_types:
@@ -135,7 +148,7 @@ class GeneticTestGenerator:
             self.create_random_candidate(fdetails) for _ in range(self.random_candidate_count)
         ]
 
-        return Population(target, fdetails, interesting_value_candidates + rand_candidates)
+        return Population(target, fdetails, interesting_value_candidates + rand_candidates, self.supported_types)
 
     def create_random_candidate(self, fdetails: FunctionDetails):
         """

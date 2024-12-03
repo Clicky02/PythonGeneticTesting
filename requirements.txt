@@ -1,2 +1,2 @@
-typing==3.7.4.3
-coverage==7.6.4
+typing
+coverage

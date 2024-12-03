@@ -15,6 +15,7 @@ class TypeInfo(Generic[T]):
     create_random: Callable[[], T]  # A function that creates a random instance of the type
     mutators: list[Callable[[T], T]]  # Functions that mutate an instance of the class
     interesting_values: list[T]  # A list of interesting values of that type (i.e. "" or 0)
+    to_str: Callable[[T], str] = str
 
     def get_random_interesting(self) -> T:
         return random.choice(self.interesting_values)

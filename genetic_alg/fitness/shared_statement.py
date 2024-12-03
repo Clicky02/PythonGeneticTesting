@@ -35,6 +35,7 @@ class SharedStatementFitness(IFitness):
             lines = cov.get_data().lines(details.file)
 
             if lines != None:
+                candidate.lines_executed = set(lines)
                 coverage_by_candidate[i] = lines
 
         _, executable_lines, *_ = cov.analysis2(details.file)

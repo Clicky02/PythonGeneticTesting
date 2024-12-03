@@ -21,14 +21,37 @@ if __name__ == "__main__":
         elite_count=3,
     )
 
-    print("SUBSEQUENCE TEST")
-    pops = gen.run_until(longest_consecutive_subsequence, max_generations(100))
+    print("RUNNING SUBSEQUENCE TEST")
+    result = gen.run_until(longest_consecutive_subsequence, max_generations(100), False)
+    pop = result.population
+    print(f"Result (generations={result.generations}, coverage={pop.coverage * 100}%)")
+    pop.minimize()
+    pop.print_all_candidates()
+    print()
 
-    print("INT TEST")
-    pops = gen.run_until(testable_int, max_generations(100))
+    print("RUNNING INT TEST")
+    result = gen.run_until(testable_int, max_generations(100), False)
+    pop = result.population
+    print(f"Result (generations={result.generations}, coverage={pop.coverage * 100}%)")
+    pop.minimize()
+    pop.print_all_candidates()
+    print()
 
-    print("\n\nFLOAT TEST")
-    pops = gen.run_until(testable_float, max_generations(100))
 
-    print("\n\nSTRING TEST")
-    pops = gen.run_until(testable_str, max_generations(100))
+    print("RUNNING FLOAT TEST")
+    result = gen.run_until(testable_float, max_generations(100), False)
+    pop = result.population
+    print(f"Result (generations={result.generations}, coverage={pop.coverage * 100}%)")
+    pop.minimize()
+    pop.print_all_candidates()
+    print()
+
+
+    print("RUNNING STRING TEST")
+    result = gen.run_until(testable_str, max_generations(100), False)
+    pop = result.population
+    print(f"Result (generations={result.generations}, coverage={pop.coverage * 100}%)")
+    pop.minimize()
+    pop.print_all_candidates()
+    print()
+

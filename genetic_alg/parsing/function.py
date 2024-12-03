@@ -13,6 +13,7 @@ class FunctionDetails:
 
     args: list[ParameterDetail]
 
+    name: str
     file: str
     first_line: int
     last_line: int
@@ -46,4 +47,4 @@ class FunctionDetails:
         if last_line is None:
             raise Exception("Something went wrong.")
 
-        return cls(args, func_file, first_line, last_line)
+        return cls(args, func.__name__, func_file, first_line, last_line)
