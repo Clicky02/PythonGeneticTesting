@@ -3,6 +3,7 @@ from typing import override
 import coverage
 from genetic_alg.fitness.interface import IFitness
 from genetic_alg.population import Population
+from genetic_alg.util import suppressPrint
 
 
 class SharedStatementFitness(IFitness):
@@ -21,34 +22,38 @@ class SharedStatementFitness(IFitness):
         details = population.target_details
 
         coverage_by_candidate: list[list[int]] = [None] * len(candidates)  # type: ignore
-        for i in range(len(candidates)):
-            candidate = candidates[i]
-            cov.erase()
+        with suppressPrint():
+            for i in range(len(candidates)):
+                candidate = candidates[i]
+                cov.erase()
 
-            args = candidate.args(details)
-            kwargs = candidate.kwargs(details)
+                args = candidate.args(details)
+                kwargs = candidate.kwargs(details)
 
-            cov.start()
-            target(*args, **kwargs)
-            cov.stop()
+                cov.start()
+                try:
+                    target(*args, **kwargs)
+                except:
+                    ...
+                cov.stop()
 
-            lines = cov.get_data().lines(details.file)
+                lines = cov.get_data().lines(details.file)
 
-            if lines != None:
-                candidate.lines_executed = set(lines)
-                coverage_by_candidate[i] = lines
+                if lines != None:
+                    candidate.lines_executed = set(lines)
+                    coverage_by_candidate[i] = lines
 
         _, executable_lines, *_ = cov.analysis2(details.file)
 
-        lines_run = {}
+        line_run_counts = {}
         for line in executable_lines:
             if line > details.first_line and line < details.last_line:
-                lines_run[line] = 0
+                line_run_counts[line] = 0
 
         for cov in coverage_by_candidate:
             for line in cov:
                 if line > details.first_line and line < details.last_line:
-                    lines_run[line] += 1
+                    line_run_counts[line] += 1
 
         population.total_fitness = 0
         for i in range(len(candidates)):
@@ -56,9 +61,12 @@ class SharedStatementFitness(IFitness):
             candidate.fitness = 0
 
             for line in coverage_by_candidate[i]:
-                if line in lines_run:
-                    candidate.fitness += 1 / lines_run[line]
+                if line in line_run_counts:
+                    candidate.fitness += 1 / line_run_counts[line]
 
             population.total_fitness += candidate.fitness
 
-        population.coverage = sum(run_count != 0 for run_count in lines_run.values()) / len(lines_run)
+        lines_not_run = [line for line, run_count in line_run_counts.items() if run_count == 0]
+
+        population.coverage = (len(line_run_counts) - len(lines_not_run)) / len(line_run_counts)
+        population.lines_not_executed = lines_not_run

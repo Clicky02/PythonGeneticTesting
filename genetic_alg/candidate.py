@@ -3,10 +3,9 @@ from dataclasses import dataclass
 import random
 from types import GenericAlias
 from typing import Any
-from genetic_alg.types.basic import TypeDict
-from genetic_alg.types.type_info import TypeInfo
 from genetic_alg.parsing.function import FunctionDetails
 from genetic_alg.parsing.parameter import ParamKind, ParameterDetail
+from genetic_alg.types.registry import TypeRegistry
 
 
 @dataclass
@@ -41,24 +40,22 @@ class Candidate:
             for i in range(len(self.arg_values))
             if func.args[i].kind == ParamKind.KEYWORD_ONLY
         }
-    
-    def to_str(self, func: FunctionDetails, type_dict: TypeDict) -> str:
-        def format_arg(val: Any, arg_info: ParameterDetail):
-            return type_dict[arg_info.type].to_str(val)
-        
+
+    def to_str(self, func: FunctionDetails) -> str:
+        def format_arg(val: Any):
+            return repr(val)
+
         def format_kwarg(val: Any, arg_info: ParameterDetail):
-            return f"{arg_info.name}={type_dict[arg_info.type].to_str(val)}"
-        
-        arg_strs = ([
-                format_arg(self.arg_values[i], func.args[i])
-                for i in range(len(self.arg_values)) 
-                if func.args[i].kind != ParamKind.KEYWORD_ONLY
-            ] + [
-                format_kwarg(self.arg_values[i], func.args[i])
-                for i in range(len(self.arg_values)) 
-                if func.args[i].kind == ParamKind.KEYWORD_ONLY
-            ]
-        )
+            return f"{arg_info.name}={repr(val)}"
+
+        arg_strs = [
+            format_arg(self.arg_values[i])
+            for i in range(len(self.arg_values))
+            if func.args[i].kind != ParamKind.KEYWORD_ONLY
+        ] + [
+            format_kwarg(self.arg_values[i], func.args[i])
+            for i in range(len(self.arg_values))
+            if func.args[i].kind == ParamKind.KEYWORD_ONLY
+        ]
 
         return f"{func.name}({", ".join(arg_strs)})"
-

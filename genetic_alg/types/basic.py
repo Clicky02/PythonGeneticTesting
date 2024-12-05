@@ -3,7 +3,9 @@ import random
 import string
 from types import GenericAlias
 from typing import TypeAlias
-from genetic_alg.types.type_info import TypeInfo
+from genetic_alg.context import GeneticContext
+from genetic_alg.types.registry import TypeRegistry
+from genetic_alg.types.type_info import GenericTypeInfo, TypeInfo
 
 """
 This file contains the TypeInfo definitions for all the basic types that we support.
@@ -11,36 +13,36 @@ This file contains the TypeInfo definitions for all the basic types that we supp
 
 
 def random_int(*_):
-    return random.randint(-1000000, 1000000)
+    return random.randint(-100000, 100000)
 
 
-def decrement(val):
+def decrement(val, ctx: GeneticContext):
     return val - 1
 
 
-def increment(val):
+def increment(val, ctx: GeneticContext):
     return val + 1
 
 
-def negate(val):
+def negate(val, ctx: GeneticContext):
     return val * -1
 
 
-int_type_info = TypeInfo[int](int, random_int, [random_int, decrement, increment, negate], [0])
+int_type_info = TypeInfo[int](int, random_int, [decrement, increment, negate], [0])
 
 
 def random_float(*_):
-    return random.random()
+    return random.random() * 200000 - 100000
 
 
-float_type_info = TypeInfo[float](float, random_float, [random_float, decrement, increment, negate], [0])
+float_type_info = TypeInfo[float](float, random_float, [decrement, increment, negate], [0])
 
 
 def random_bool(*_):
     return random.randint(0, 1) == 0
 
 
-def flip_bool(val: bool):
+def flip_bool(val: bool, ctx: GeneticContext):
     return not val
 
 
@@ -48,12 +50,12 @@ bool_type_info = TypeInfo[bool](bool, random_bool, [flip_bool], [True, False])
 
 
 def random_string(*_):
-    length = random.randint(1, 50)
+    length = random.randint(1, 25)
     random_string = "".join(random.choice(string.printable) for _ in range(length))
     return random_string
 
 
-def add_char(val: str):
+def add_char(val: str, ctx: GeneticContext):
     # If the string is empty, add a single character to start with
     if not val:
         return random.choice(string.printable)
@@ -63,7 +65,7 @@ def add_char(val: str):
     return val[:pos] + random.choice(string.printable) + val[pos:]
 
 
-def remove_char(val: str):
+def remove_char(val: str, ctx: GeneticContext):
     # If the string is empty, return it as is (nothing to remove)
     if not val:
         return val
@@ -73,37 +75,49 @@ def remove_char(val: str):
     return val[:pos] + val[pos + 1 :]
 
 
-str_type_info = TypeInfo[str](str, random_string, [random_string, add_char, remove_char], [""], repr)
+def change_char(val: str, ctx: GeneticContext):
+    # If the string is empty, return it as is (nothing to remove)
+    if not val:
+        return val
+
+    # For non-empty strings, remove a character at a random position
+    pos = random.randint(0, len(val) - 1)
+    return val[:pos] + random.choice(string.printable) + val[pos + 1 :]
 
 
-# Define values for a new type `list[int]`.
-def random_int_list(*_):
-    return [random.randint(-100, 100) for _ in range(random.randint(1, 10))]
+str_type_info = TypeInfo[str](str, random_string, [change_char, add_char, remove_char], [""])
 
 
-def add_element(val: list[int]):
+# Define values for a new generic type `list`.
+def random_list(types: list[TypeInfo], ctx: GeneticContext):
+    (inner_type,) = types
+    return [inner_type.random(ctx) for _ in range(random.randint(1, 10))]
+
+
+def add_element(val: list, types: list[TypeInfo], ctx: GeneticContext):
+    (inner_type,) = types
     val = copy(val)
-    val.append(random.randint(-100, 100))
+    val.append(inner_type.random(ctx))
     return val
 
 
-def remove_element(val: list[int]):
+def remove_element(val: list, _types: list[TypeInfo], ctx: GeneticContext):
     val = copy(val)
     if val:
         val.pop(random.randint(0, len(val) - 1))
     return val
 
 
-def mutate_element(val: list[int]):
+def mutate_element(val: list, types: list[TypeInfo], ctx: GeneticContext):
+    (inner_type,) = types
     val = copy(val)
-    i = random.randint(0, len(val) - 1)
-    val[i] = int_type_info.mutate(val[i])
+    if len(val) > 0:
+        i = random.randint(0, len(val) - 1)
+        val[i] = inner_type.mutate(val[i], ctx)
     return val
 
 
-int_list_type_info = TypeInfo[list[int]](
-    list[int], random_int_list, [add_element, remove_element, mutate_element], [[], [0]]
-)
+list_type_info = GenericTypeInfo[list](list, 1, random_list, [add_element, remove_element, mutate_element], [[]])
 
 
 # Define values for a new type `dict[int]`.
@@ -111,12 +125,12 @@ def random_dict(*_):
     return {random.choice(string.ascii_lowercase): random.randint(-100, 100) for _ in range(random.randint(1, 5))}
 
 
-def add_key_value(val: dict):
+def add_key_value(val: dict, ctx: GeneticContext):
     val[random.choice(string.ascii_lowercase)] = random.randint(-100, 100)
     return val
 
 
-def remove_key(val: dict):
+def remove_key(val: dict, ctx: GeneticContext):
     if val:
         val.pop(random.choice(list(val.keys())))
     return val
@@ -130,7 +144,7 @@ def random_int_tuple(*_):
     return (random.randint(-100, 100), random.randint(-100, 100))
 
 
-def reverse_tuple(val: tuple):
+def reverse_tuple(val: tuple, ctx: GeneticContext):
     return val[::-1]
 
 
@@ -142,12 +156,12 @@ def random_int_set(*_):
     return {random.randint(-100, 100) for _ in range(random.randint(1, 10))}
 
 
-def add_to_set(val: set[int]):
+def add_to_set(val: set[int], ctx: GeneticContext):
     val.add(random.randint(-100, 100))
     return val
 
 
-def remove_from_set(val: set[int]):
+def remove_from_set(val: set[int], ctx: GeneticContext):
     if val:
         val.pop()
     return val
@@ -160,13 +174,11 @@ basic_type_infos_list = [
     float_type_info,
     bool_type_info,
     str_type_info,
-    int_list_type_info,
     dict_type_info,
     set_type_info,
     tuple_type_info,
 ]
 
-# Convert the list to a dictionary for quick access
+basic_generic_type_infos_list = [list_type_info]
 
-TypeDict: TypeAlias = dict[type | GenericAlias, TypeInfo]
-basic_type_infos = {type_info.type: type_info for type_info in basic_type_infos_list}
+default_registry = TypeRegistry(basic_type_infos_list, basic_generic_type_infos_list)
