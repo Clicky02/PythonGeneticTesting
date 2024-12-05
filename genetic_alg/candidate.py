@@ -1,4 +1,5 @@
 from __future__ import annotations
+from copy import copy
 from dataclasses import dataclass
 import random
 from types import GenericAlias
@@ -32,11 +33,13 @@ class Candidate:
         return Candidate(self.arg_values.copy())
 
     def args(self, func: FunctionDetails) -> list[Any]:
-        return [self.arg_values[i] for i in range(len(self.arg_values)) if func.args[i].kind != ParamKind.KEYWORD_ONLY]
+        return [
+            copy(self.arg_values[i]) for i in range(len(self.arg_values)) if func.args[i].kind != ParamKind.KEYWORD_ONLY
+        ]
 
     def kwargs(self, func: FunctionDetails) -> dict[str, Any]:
         return {
-            func.args[i].name: self.arg_values[i]
+            func.args[i].name: copy(self.arg_values[i])
             for i in range(len(self.arg_values))
             if func.args[i].kind == ParamKind.KEYWORD_ONLY
         }
