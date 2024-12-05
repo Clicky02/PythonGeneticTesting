@@ -2,6 +2,8 @@ from dataclasses import dataclass
 import inspect
 from typing import Callable, Self
 
+import coverage
+
 from genetic_alg.parsing.parameter import ParamKind, ParameterDetail
 
 
@@ -17,6 +19,7 @@ class FunctionDetails:
     file: str
     first_line: int
     last_line: int
+    executable_lines: set[int]
 
     @classmethod
     def from_func(cls, func: Callable) -> Self:
@@ -41,10 +44,16 @@ class FunctionDetails:
 
         first_line = func.__code__.co_firstlineno
 
-        *_, last_line_info = func.__code__.co_lines()
-        last_line = last_line_info[2]
+        last_line = first_line
+        for l in func.__code__.co_lines():
+            if l[2] is not None and l[2] > last_line:
+                last_line = l[2]
 
         if last_line is None:
             raise Exception("Something went wrong.")
 
-        return cls(args, func.__name__, func_file, first_line, last_line)
+        cov = coverage.Coverage()
+        _, executable_lines, *_ = cov.analysis2(func_file)
+        executable_lines = set([l for l in executable_lines if l > first_line and l <= last_line])
+
+        return cls(args, func.__name__, func_file, first_line, last_line, executable_lines)

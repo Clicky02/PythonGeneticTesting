@@ -43,16 +43,14 @@ class SharedStatementFitness(IFitness):
                     candidate.lines_executed = set(lines)
                     coverage_by_candidate[i] = lines
 
-        _, executable_lines, *_ = cov.analysis2(details.file)
-
         line_run_counts = {}
-        for line in executable_lines:
-            if line > details.first_line and line < details.last_line:
+        for line in details.executable_lines:
+            if line > details.first_line and line <= details.last_line:
                 line_run_counts[line] = 0
 
         for cov in coverage_by_candidate:
             for line in cov:
-                if line > details.first_line and line < details.last_line:
+                if line > details.first_line and line <= details.last_line:
                     line_run_counts[line] += 1
 
         population.total_fitness = 0
