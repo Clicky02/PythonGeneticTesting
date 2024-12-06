@@ -152,10 +152,11 @@ class GeneticTestGenerator:
                         if random.random() < self.mutate_to_new_value_chance:
                             mutated_value = type_info.random(ctx)
                         else:
-                            mutation_function = random.choice(
-                                type_info.mutators
-                            )  # Choose a mutation function at random
-                            mutated_value = mutation_function(value, ctx)  # Apply the mutation function to the value
+                            # Choose a mutation function at random
+                            mutation_function = random.choice(type_info.mutators)
+
+                            # Apply the mutation function to the value
+                            mutated_value = mutation_function(value, type_info, ctx)
 
                         # print(f"Mutating {c.arg_values[i]} -> {mutated_value}")
                         c.arg_values[i] = mutated_value
