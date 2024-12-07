@@ -22,7 +22,7 @@ class TypeInfo(Generic[T]):
 
     def random(self, ctx: GeneticContext) -> T:
         if random.random() < ctx.interesting_chance:
-            return random.choice(self.interesting_values)
+            return random.choice(self.interesting_values + ctx.interesting_values.get(self.type, []))
         return self.create_random(self, ctx)
 
     def mutate(self, val: T, ctx: GeneticContext):
@@ -60,5 +60,5 @@ class GenericTypeInfo(Generic[T]):
 
             mutators.append(mutator)
 
-        parameterized_type = GenericAlias(self.type, *[info.type for info in types])
+        parameterized_type = GenericAlias(self.type, tuple(info.type for info in types))
         return TypeInfo(parameterized_type, create_random, mutators, self.interesting_values)
