@@ -19,8 +19,8 @@ INTERESTING_CHANCE = 0.5
 CANDIDATES_PRESERVED = 0.5
 MUTATION_RATE = 0.25
 NEW_VALUE_MUTATION_RATE = 0.025
-# STOP_CONDITION = max_generations(10)
-STOP_CONDITION = max_exec_time(5 * 60)
+STOP_CONDITION = max_generations(10)
+# STOP_CONDITION = max_exec_time(5 * 60)
 
 
 def create_data_dict():
@@ -106,7 +106,7 @@ if __name__ == "__main__":
 
         print()
         print(f"****************************************")
-        print(f"STARTING NO INTERESTING TEST {i}")
+        print(f"STARTING NO INTERESTING TEST {i + 1}")
         print(f"****************************************")
         print()
 
@@ -114,7 +114,7 @@ if __name__ == "__main__":
 
         print()
         print(f"****************************************")
-        print(f"STARTING SIMPLE INTERESTING TEST {i}")
+        print(f"STARTING SIMPLE INTERESTING TEST {i + 1}")
         print(f"****************************************")
         print()
 
@@ -122,7 +122,7 @@ if __name__ == "__main__":
 
         print()
         print(f"****************************************")
-        print(f"STARTING ALL INTERESTING TEST {i}")
+        print(f"STARTING ALL INTERESTING TEST {i + 1}")
         print(f"****************************************")
         print()
 

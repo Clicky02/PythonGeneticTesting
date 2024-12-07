@@ -40,18 +40,18 @@ class GeneticTestGenerator:
 
     def __init__(
         self,
-        fitness_algorithm: IFitness,
-        selection_strategy: ISelection,
-        pop_size: int = 30,  # Number of candidates in the population
+        fitness_algorithm: IFitness,  # Fitness Function
+        selection_strategy: ISelection,  # Selection Method
+        pop_size: int = 64,  # Number of candidates in the population
         elite_count: int = 0,  # Number of elite candidates preserved each generation
-        percent_candidates_preserved: float = 0,  # Percent of candidates preserved each generation
-        mutation_rate: float = 0.05,  # Mutation chance per argument
+        percent_candidates_preserved: float = 0.5,  # Percent of candidates preserved each generation
+        mutation_rate: float = 0.25,  # Mutation chance per argument
         init_population_strat: InitialPopulationStrategy = InitialPopulationStrategy.INTERESTING_FIRST,  # how the initial population is chosen
         pop_random_percent: float = 0.5,  # Min percent of population to be randomly created, only used if init_population_strat is MIN_PERCENT_RANDOM
-        interesting_chance: float = 0.3,  # Chance that a random value is an interesting value
-        mutate_to_new_value_chance: float = 0.1,
+        interesting_chance: float = 0.5,  # Chance that a random value is an interesting value
+        mutate_to_new_value_chance: float = 0.025,  # On mutation, chance that the value gets reset to a random value
         dynamic_interesting_values: bool = True,  # Whether to scan the function to find interesting values
-        type_registry: TypeRegistry = default_registry,
+        type_registry: TypeRegistry = default_registry,  # The supported types
     ) -> None:
         self.fitness_algorithm = fitness_algorithm
         self.selection_strategy = selection_strategy

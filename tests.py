@@ -61,6 +61,11 @@ def testable_str(a: str, b: str):
         return 5
 
 
+"""
+Remaining functions taken from https://www.kaggle.com/datasets/thedevastator/python-code-instruction-dataset
+"""
+
+
 def longest_consecutive_subsequence(nums: list[int]):
     """
     Finds the length of the longest subsequence of consecutive integers in an unsorted list.
@@ -755,7 +760,7 @@ test_funcs = [
     code_generator,
     find_second_largest_number,
     find_all_indices,
-    # all_palindromic_permutations, # Excluded due to exection time
+    # all_palindromic_permutations, # Excluded due to infinite loop
     celsius_to_fahrenheit,
     character_count,
     lcs,
