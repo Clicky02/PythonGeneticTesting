@@ -51,7 +51,17 @@ class SharedStatementFitness(IFitness):
         for cov in coverage_by_candidate:
             for line in cov:
                 if line > details.first_line and line <= details.last_line:
-                    line_run_counts[line] += 1
+                    if line in line_run_counts:
+                        line_run_counts[line] += 1
+                    else:
+                        # This is accounting for a difference between the executable lines output
+                        # and the executed lines ouput. In certain cases, the executed line will
+                        # be below the executable line outputted by the coverage library
+                        while line > details.first_line:
+                            line -= 1
+                            if line in line_run_counts:
+                                line_run_counts[line] += 1
+                                break
 
         population.total_fitness = 0
         for i in range(len(candidates)):
