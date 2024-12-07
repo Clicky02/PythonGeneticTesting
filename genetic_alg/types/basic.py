@@ -50,7 +50,7 @@ bool_type_info = TypeInfo[bool](bool, random_bool, [flip_bool], [True, False])
 
 
 def random_string(*_):
-    length = random.randint(1, 25)
+    length = random.randint(1, 30)
     random_string = "".join(random.choice(string.printable) for _ in range(length))
     return random_string
 
@@ -101,7 +101,7 @@ def change_char(val: str, *_):
     return val[:pos] + random.choice(string.printable) + val[pos + 1 :]
 
 
-str_type_info = TypeInfo[str](str, random_string, [change_char, add_char, remove_char, add_str, remove_str], [""])
+str_type_info = TypeInfo[str](str, random_string, [change_char, add_str, remove_str], [""])
 
 
 # Define values for a new generic type `list`.

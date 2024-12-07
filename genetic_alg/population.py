@@ -20,9 +20,8 @@ class Population:
     coverage: float = 0
     lines_not_executed: list[int] | None = None
 
-    def print_all_candidates(self):
-        for c in self.candidates:
-            print(c.to_str(self.target_details))
+    def candidates_as_strings(self):
+        return [c.to_str(self.target_details) for c in self.candidates]
 
     def minimize(self):
         """

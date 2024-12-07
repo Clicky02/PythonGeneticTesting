@@ -4,6 +4,7 @@ from itertools import product
 from math import ceil
 import os
 import random
+import time
 from types import GenericAlias
 from typing import Any, Callable, Hashable
 from genetic_alg.context import GeneticContext
@@ -23,6 +24,7 @@ from genetic_alg.types.basic import default_registry
 class GenerationResult:
     population: Population
     generations: int
+    population_size: int
     all_populations: list[Population] | None
 
 
@@ -65,18 +67,19 @@ class GeneticTestGenerator:
         self.type_registry = type_registry
 
     def run(self, target: Callable, generations: int, print_progress: bool = True) -> GenerationResult:
-        return self.run_until(target, lambda gens, pop: gens >= generations, print_progress)
+        return self.run_until(target, lambda gens, *_: gens >= generations, print_progress)
 
     def run_until(
-        self, target: Callable, stop_condition: Callable[[int, Population], bool], print_progress: bool = True
+        self, target: Callable, stop_condition: Callable[[int, Population, float], bool], print_progress: bool = True
     ) -> GenerationResult:
         population, ctx = self.create_population_for(target)
         self.fitness_algorithm.evaluate_on(population)
 
         gen = 0
+        start_time = time.time()
         best_population = population
         populations = [population]
-        while not stop_condition(gen, population):
+        while not stop_condition(gen, population, start_time):
             if print_progress:
                 columns, _ = os.get_terminal_size()
                 # print(population)
@@ -108,7 +111,7 @@ class GeneticTestGenerator:
                 sep="",
             )
 
-        return GenerationResult(best_population, gen, populations)
+        return GenerationResult(best_population, gen, self.pop_size, populations)
 
     def get_next_population(self, population: Population) -> Population:
         curr_candidates = population.candidates

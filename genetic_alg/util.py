@@ -12,3 +12,8 @@ def suppressPrint():
             yield
         finally:
             sys.stdout = orig
+
+
+def print_list(lst: list[str]):
+    for txt in lst:
+        print(txt)
