@@ -1,6 +1,6 @@
-# PyGET (Python GEnetic Tester)
+# PyGET (Python GEnetic Testing)
 
-This is a python library created for my Advanced Software Engineering course. It provides an API for automatically generating test cases using a genetic algorithm.
+This is a python library created for the CS5130 Advanced Software Engineering course by Gareth Fultz and Jordan Shaheen. It provides an API for automatically generating test inputs using a genetic algorithm.
 
 ## Usage
 
@@ -79,3 +79,5 @@ The functions tested can be found in the `tests.py` file. The functions were tak
 -   Experiment with different options to determine what yields the best results
 -   Add a branch coverage fitness function
 -   Add more supported types
+-   Add interchangable crossover functions
+-   Add argument type inference when no type hints are present
