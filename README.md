@@ -1,4 +1,4 @@
-# `genetic_alg.py`
+# PyGET (Python GEnetic Tester)
 
 This is a python library created for my Advanced Software Engineering course. It provides an API for automatically generating test cases using a genetic algorithm.
 
@@ -72,7 +72,7 @@ gen.run_until(my_func, lambda generations, population, start_time: generations >
 
 The results of our testing can be found in the `./results` folder.
 
-The functions tested can be found in the `tests.py` file. The functions were taken from [this Python Instruct Dataset](https://www.kaggle.com/datasets/thedevastator/python-code-instruction-dataset).
+The functions tested can be found in the `tests.py` file. The functions were taken from [this Python Instruct Dataset](https://www.kaggle.com/datasets/thedevastator/python-code-instruction-dataset). Functions were modified to include type signatures.
 
 ## Potential Future Work
 
