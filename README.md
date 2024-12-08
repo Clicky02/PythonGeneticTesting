@@ -72,7 +72,7 @@ gen.run_until(my_func, lambda generations, population, start_time: generations >
 
 The results of our testing can be found in the `./results` folder.
 
-The functions tested can be found in the `tests.py` file. The functions were taken from (this Python Instruct Dataset)[https://www.kaggle.com/datasets/thedevastator/python-code-instruction-dataset].
+The functions tested can be found in the `tests.py` file. The functions were taken from [this Python Instruct Dataset](https://www.kaggle.com/datasets/thedevastator/python-code-instruction-dataset).
 
 ## Potential Future Work
 
