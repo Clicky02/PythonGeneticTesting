@@ -68,6 +68,10 @@ gen = GeneticTestGenerator(
 gen.run_until(my_func, lambda generations, population, start_time: generations >= 50)
 ```
 
+## Experimental Artifacts
+
+The results of our testing can be found in the `./results` folder.
+
 ## Potential Future Work
 
 -   Experiment with different options to determine what yields the best results
