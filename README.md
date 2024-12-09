@@ -21,11 +21,15 @@ python -m venv .venv
 ```sh
 ./.venv/Scripts/activate
 ```
+or 
+```sh
+./.venv/Scripts/activate.bat
+```
 
 5. Install the required packages:
 
 ```sh
-pip install -r requirement.txt
+pip install -r requirements.txt
 ```
 
 ### Recreating the experiment
